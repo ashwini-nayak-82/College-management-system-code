@@ -1,0 +1,31 @@
+import initTeacherModel from "../../models/teacherModel.js";
+import { send, setErrmsg } from "../../helper/responsehelper.js";
+import { RESPONSE } from "../../constants/global.js";
+import { Router } from "express";
+import { ISACTIVE } from "../../constants/constant.js";
+const router = Router();
+export default router.delete("/", async (req, res) => {
+  try {
+    const { teacher_id } = req.query;
+
+    const Teacher = await initTeacherModel();
+
+    if (!teacher_id) {
+      return send(res, setErrmsg(RESPONSE.REQUIRED, "teacher_id"));
+    }
+
+    const deleted = await Teacher.update(
+      {isactive:ISACTIVE.INACTIVE},
+      {
+      where: { id: teacher_id }
+    });
+
+    if (!deleted) {
+      return send(res, setErrmsg(RESPONSE.NOT_FOUND, "teacher"));
+    }
+
+    return send(res, RESPONSE.SUCCESS, {}, {});
+  } catch (err) {
+    return send(res, setErrmsg(RESPONSE.ERROR, err.message));
+  }
+});

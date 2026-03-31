@@ -3,42 +3,31 @@ import bcrypt from "bcrypt";
 import initStudentModel from "../models/studentModel.js";
 import initTeacherModel from "../models/teacherModel.js";
 import initStaffModel from "../models/staffModel.js";
-
+import { send, setErrmsg } from "../helper/responsehelper.js";
+import { RESPONSE } from "../constants/global.js";
 const router = Router();
 
-router.post("/register", async (req, res) => {
+export const register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
     if (!name || !email || !password || !role) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields required",
-      });
+      return send(res, setErrmsg(RESPONSE.REQUIRED, "All fields required"));
     }
 
     let Model;
 
-    if (role === "student") {
-      Model = await initStudentModel();
-    } else if (role === "teacher") {
-      Model = await initTeacherModel();
-    } else if (role === "staff") {
-      Model = await initStaffModel();
-    } else {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid role",
-      });
+    if (role.student === 1) Model = await initStudentModel();
+    else if (role.teacher === 2) Model = await initTeacherModel();
+    else if (role.staff === 3) Model = await initStaffModel();
+    else {
+      return send(res, setErrmsg(RESPONSE.INVALID, "Invalid role"));
     }
 
     const isExist = await Model.findOne({ where: { email } });
 
     if (isExist) {
-      return res.status(400).json({
-        success: false,
-        message: "User already exists",
-      });
+      return send(res, setErrmsg(RESPONSE.ERROR, "User already exists"));
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -50,16 +39,10 @@ router.post("/register", async (req, res) => {
       role,
     });
 
-    return res.json({
-      success: true,
-      message: "Registered successfully",
-    });
+    return send(res, setErrmsg(RESPONSE.SUCCESS, "Registered Succesfully"));
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      message: err.message,
-    });
+    return send(res, setErrmsg(RESPONSE.ERROR, { message: err.message }));
   }
-});
+};
 
 export default router;

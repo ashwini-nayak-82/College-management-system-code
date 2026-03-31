@@ -1,9 +1,12 @@
 import { Router } from "express";
-import { register, login } from "../controllers/authController.js";
-
+import { login } from "./login.js";
+import { register } from "./register.js";
+import { updatePassword } from "../controllers/updatePassword.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
+import { forgotPassword } from "../controllers/forgotPassword.js";
 const router = Router();
-
-router.post("/register", register);
 router.post("/login", login);
-
+router.post("/register", register);
+router.put("/update-password", authMiddleware, updatePassword);
+router.post("/forgot-password", forgotPassword);
 export default router;

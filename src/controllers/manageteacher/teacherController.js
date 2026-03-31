@@ -1,4 +1,4 @@
-import initTeacherModel from "../models/teacherModel.js";
+import initTeacherModel from "../../models/teacherModel.js";
 import bcrypt from "bcryptjs";
 
 export const addTeacher = async (req, res) => {

@@ -1,32 +1,34 @@
 import jwt from "jsonwebtoken";
+import { RESPONSE } from "../constants/global.js";
+import { send, setErrmsg } from "../helper/responsehelper.js";
 
 export const authMiddleware = (req, res, next) => {
   try {
     const header = req.headers.authorization;
 
     if (!header) {
-      return res.status(401).json({ message: "No token" });
+      return send(res, setErrmsg(RESPONSE.ERROR, "No token"));
     }
 
-    const token = header.split(" ")[1];
+    const token = header;
 
     if (!token) {
-      return res.status(401).json({ message: "Invalid token format" });
+      return send(res, setErrmsg(RESPONSE.ERROR, "Invalid token format"));
     }
 
-    const decoded = jwt.verify(token, "your_secret_key");
+    const decoded = jwt.verify(token, "secretKey");
 
     req.user = decoded;
 
     next();
   } catch (err) {
-    return res.status(401).json({ message: "Invalid token" });
+    return send(res, setErrmsg(RESPONSE.ERROR, "Invalid token"));
   }
 };
 
 export const allowOnlyStaff = (req, res, next) => {
   if (!req.user || req.user.role !== "staff") {
-    return res.status(403).json({ message: "Only staff allowed" });
+    return res.status(403).json({ message: "Access denied" });
   }
 
   next();

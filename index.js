@@ -1,15 +1,12 @@
 import express from "express";
-import authRoutes from "./src/routes/authRoutes.js";
-import teacherRoutes from "./src/routes/teacherRoutes.js";
 
+import { router } from "./routes.js";
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-app.use("/api/auth", authRoutes);
-app.use("/api/teacher", teacherRoutes);
+router(app);
 
 app.listen(3000, () => {
-  console.log("server running on 3000");
+  console.log("Server running on port 3000");
 });

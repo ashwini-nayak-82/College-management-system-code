@@ -1,0 +1,11 @@
+import { Router } from "express";
+import updateStudent from "./updateStudent.js";
+import liststudent from "./listStudent.js";
+import deletestudent from "./deleteStudent.js";
+import createstudent from "./createStudent.js";
+let route = Router();
+route.use("/create", createstudent);
+route.use("/update", updateStudent);
+route.use("/list", liststudent);
+route.use("/delete", deletestudent);
+export default route;
